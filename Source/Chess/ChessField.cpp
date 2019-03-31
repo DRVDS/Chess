@@ -10,6 +10,12 @@ AChessField::AChessField()
 
 }
 
+void AChessField::SetFieldParameters(F2DPosition _Position, bool _isWhite)
+{
+	Position = _Position;
+	isWhite = _isWhite;
+}
+
 // Called when the game starts or when spawned
 void AChessField::BeginPlay()
 {

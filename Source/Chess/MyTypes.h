@@ -11,11 +11,21 @@ struct F2DPosition
 {
 	GENERATED_BODY()
 
-		UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 		int32 x;
 
 	UPROPERTY(BlueprintReadWrite)
 		int32 y;
+
+	F2DPosition() 
+		:x(0),y(0)
+	{
+	}
+
+	F2DPosition(int _x, int _y) 
+		:x(_x),y(_y)
+	{
+	}
 
 };
 
