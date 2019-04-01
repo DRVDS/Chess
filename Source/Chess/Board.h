@@ -8,6 +8,7 @@
 #include "Board.generated.h"
 
 class AChessField;
+class AAbstract_Piece;
 
 UCLASS()
 class CHESS_API ABoard : public AActor
@@ -21,28 +22,30 @@ public:
 	// Sets default values for this actor's properties
 	ABoard();
 
-	UFUNCTION(BlueprintCallable)
-	void SpawnAllPieces();
-
-	UFUNCTION(BlueprintCallable)
-	void SpawnFigure(EChessFigure FigureType, bool isBlack, FVector SpawnLocation, F2DPosition FigurePosition);
-
 
 	UPROPERTY(BlueprintReadWrite)
-		int height;
+	int height;
 
 	UPROPERTY(BlueprintReadWrite)
-		int width;
+	int width;
+
+	// holds references to all the Fields
+	UPROPERTY(BlueprintReadWrite)
+	TArray<AChessField*> Fields;
 
 	UPROPERTY(BlueprintReadWrite)
-		TArray<AChessField*> Fields;
+	AChessField* ActiveField;
 
-	UPROPERTY(BlueprintReadWrite)
-		AChessField* ActiveField;
+	// determines what figure should be spawned on this field index if any
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TArray<ECF> FigureAtPosition;
 
-	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<AChessField> FieldMesh;
+	// what type of field should be spawned ?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AChessField> FieldActor;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TMap<ECF, TSubclassOf<AAbstract_Piece>> Pieces;
 
 protected:
 	// Called when the game starts or when spawned

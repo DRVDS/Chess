@@ -1,8 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Board.h"
+#include "MyTypes.h"
 #include "ChessField.h"
 #include "Engine/World.h"
+#include "Abstract_Piece.h"
+
+#include "Horse_Piece.h"
+#include "Queen_Piece.h"
+#include "King_Piece.h"
 
 
 // Sets default values
@@ -14,6 +20,16 @@ ABoard::ABoard()
 	height = 7;
 	width = 7;
 	ActiveField = nullptr;
+
+	FigureAtPosition = { ECF::Tower, ECF::Horse, ECF::Bishop, ECF::Queen, ECF::King, ECF::Bishop,ECF::Horse, ECF::Tower,
+						 ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn,
+						ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
+						ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
+						ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
+						ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
+						ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn,
+						ECF::Tower, ECF::Horse, ECF::Bishop, ECF::Queen, ECF::King, ECF::Bishop,ECF::Horse, ECF::Tower };
+
 
 }
 
@@ -33,55 +49,45 @@ void ABoard::BeginPlay()
 	{
 		for (int x = 0; x <= width; x++) {
 			
-			tmpTrans.SetLocation(FVector(x*100.f, y*-100.f, 0.f));
+			tmpTrans.SetLocation(FVector(x*400.f, y*-400.f, 0.f));
 			tmpPos.x = x;
 			tmpPos.y = y;
 			
-			auto tmp = GetWorld()->SpawnActorDeferred<AChessField>(FieldMesh,tmpTrans, this);
+			auto tmp = GetWorld()->SpawnActorDeferred<AChessField>(FieldActor,tmpTrans, this);
 		
 			if (y % 2) 
 			{
-				 tmp->SetFieldParameters(tmpPos, !(x % 2)); // set white or black if it is an uneven row depending on the x value
+				 tmp->SetFieldParameters(tmpPos, (x % 2)); // set white or black if it is an uneven row depending on the x value
 			}
 			else {
-				 tmp->SetFieldParameters(tmpPos, true);
+				 tmp->SetFieldParameters(tmpPos, !(x % 2));
 			}
 			// spawn the field
 			UGameplayStatics::FinishSpawningActor(tmp, tmpTrans);
 
+			// Check what figure should be spawned and what colour
+			
+			auto FigureType = FigureAtPosition[x + y * width];
+			
+			if(FigureType != ECF::Empty)
+			{
+				auto ClassToSpawn = Pieces.FindRef(FigureType);
+				tmp->SpawnFigure(ClassToSpawn, x + y * width < 20 ? true : false);
+			}
+			
+		
+
 			// add to fields array
 			Fields.Add(tmp);
+
 		}
 
-		// Spawn Pieces 
 	}
 
 	
 }
 
 
-void ABoard::SpawnAllPieces() 
-{
-	for (AChessField* Field : Fields)
-	{
-		// SpawnPawn - black
-		if (Field->Position.y == 1) { SpawnFigure(EChessFigure::Chess_Pawn, true, Field->GetActorLocation(), Field->Position); }
-		// SpawnPawn - white
-		if (Field->Position.x == 6) { SpawnFigure(EChessFigure::Chess_Pawn, false, Field->GetActorLocation(), Field->Position); }
-
-
-		
-		
-	}
-
-
-}
-
-void ABoard::SpawnFigure(EChessFigure FigureType, bool isBlack, FVector SpawnLocation, F2DPosition FigurePosition) 
-{
-
-
-}
 
 // Called every frame
 void ABoard::Tick(float DeltaTime)

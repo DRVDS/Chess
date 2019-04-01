@@ -30,15 +30,18 @@ struct F2DPosition
 };
 
 UENUM(BlueprintType)		//"BlueprintType" is essential to include
-enum class EChessFigure : uint8
+enum class ECF : uint8
 {
-	Chess_Pawn 		UMETA(DisplayName = "Pawn"),
-	Chess_Horse 	UMETA(DisplayName = "Horse"),
-	Chess_Bishop 	UMETA(DisplayName = "Bishop"),
-	Chess_Tower 	UMETA(DisplayName = "Tower"),
-	Chess_Queen 	UMETA(DisplayName = "Queen"),
-	Chess_King 		UMETA(DisplayName = "King")
+	Pawn 		UMETA(DisplayName = "Pawn"),
+	Horse 		UMETA(DisplayName = "Horse"),
+	Bishop 		UMETA(DisplayName = "Bishop"),
+	Tower 		UMETA(DisplayName = "Tower"),
+	Queen 		UMETA(DisplayName = "Queen"),
+	King 		UMETA(DisplayName = "King"),
+	Empty		UMETA(DisplayName = "EmptyField")
 };
+
+
 
 
 
