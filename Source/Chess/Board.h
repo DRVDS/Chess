@@ -45,7 +45,7 @@ public:
 	TSubclassOf<AChessField> FieldActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TMap<ECF, TSubclassOf<AAbstract_Piece>> Pieces;
+	TMap<ECF, TSubclassOf<AAbstract_Piece>> Pieces;
 
 protected:
 	// Called when the game starts or when spawned

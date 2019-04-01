@@ -33,12 +33,14 @@ AChessField::AChessField()
 		White = WhiteInst.Object;
 		Black = BlackInst.Object;
 	}
-	// set parent
-	Board = Cast<ABoard>(GetOwner());
+
 }
 
 void AChessField::SetFieldParameters(F2DPosition _Position, bool _isWhite)
 {
+	// set parent
+	Board = Cast<ABoard>(GetOwner());
+
 	Position = _Position;
 	isWhite = _isWhite;
 	FieldMesh->SetMaterial(0, isWhite ? White : Black);

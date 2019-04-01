@@ -11,10 +11,10 @@ struct F2DPosition
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 		int32 x;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 		int32 y;
 
 	F2DPosition() 

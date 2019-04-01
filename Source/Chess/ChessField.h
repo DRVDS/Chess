@@ -27,8 +27,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SpawnFigure(TSubclassOf<AAbstract_Piece> PieceToSpawn, bool isBlack);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	F2DPosition Position;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		bool isOccupied;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ABoard* Board;

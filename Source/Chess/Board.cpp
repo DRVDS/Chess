@@ -17,8 +17,8 @@ ABoard::ABoard()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	height = 7;
-	width = 7;
+	height = 8;
+	width = 8;
 	ActiveField = nullptr;
 
 	FigureAtPosition = { ECF::Tower, ECF::Horse, ECF::Bishop, ECF::Queen, ECF::King, ECF::Bishop,ECF::Horse, ECF::Tower,
@@ -28,7 +28,8 @@ ABoard::ABoard()
 						ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
 						ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
 						ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn,
-						ECF::Tower, ECF::Horse, ECF::Bishop, ECF::Queen, ECF::King, ECF::Bishop,ECF::Horse, ECF::Tower };
+						ECF::Tower, ECF::Horse, ECF::Bishop, ECF::Queen, ECF::King, ECF::Bishop,ECF::Horse, ECF::Tower 
+						};
 
 
 }
@@ -45,9 +46,9 @@ void ABoard::BeginPlay()
 	FTransform tmpTrans(FRotator(0.f, 0.f, 0.f));
 
 	// Spawn chess board
-	for (int y = 0; y <= height; y++)
+	for (int y = 0; y < height; y++)
 	{
-		for (int x = 0; x <= width; x++) {
+		for (int x = 0; x < width; x++) {
 			
 			tmpTrans.SetLocation(FVector(x*400.f, y*-400.f, 0.f));
 			tmpPos.x = x;
@@ -66,20 +67,21 @@ void ABoard::BeginPlay()
 			UGameplayStatics::FinishSpawningActor(tmp, tmpTrans);
 
 			// Check what figure should be spawned and what colour
-			
-			auto FigureType = FigureAtPosition[x + y * width];
-			
-			if(FigureType != ECF::Empty)
+			if( (x + y * width) < FigureAtPosition.Num() )
 			{
-				auto ClassToSpawn = Pieces.FindRef(FigureType);
-				tmp->SpawnFigure(ClassToSpawn, x + y * width < 20 ? true : false);
-			}
+				auto FigureType = FigureAtPosition[x + y * width];
 			
+				if(FigureType != ECF::Empty)
+				{
+					auto ClassToSpawn = Pieces.FindRef(FigureType);
+					tmp->SpawnFigure(ClassToSpawn, x + y * width < 20 ? true : false);
+					tmp->isOccupied = true;
+				}
+			}
+	
+				// add to fields array
+				Fields.Add(tmp);
 		
-
-			// add to fields array
-			Fields.Add(tmp);
-
 		}
 
 	}
