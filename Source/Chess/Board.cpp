@@ -6,10 +6,8 @@
 #include "Engine/World.h"
 #include "Abstract_Piece.h"
 
-#include "Horse_Piece.h"
-#include "Queen_Piece.h"
-#include "King_Piece.h"
-
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
 ABoard::ABoard()
@@ -21,13 +19,29 @@ ABoard::ABoard()
 	width = 8;
 	ActiveField = nullptr;
 
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	SpringArmAncor = CreateDefaultSubobject<USceneComponent>(TEXT("SpringArmAncor"));
+	SpringArmAncor->SetupAttachment(RootComponent);
+	SpringArmAncor->SetRelativeLocation(FVector(1600.f, -1200.f, 0.f));
+
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->SetupAttachment(SpringArmAncor);
+	SpringArm->TargetArmLength = 4000.f;
+	SpringArm->SetWorldRotation(FRotator(-50.f, 0.f, 0.f));
+	SpringArm->bDoCollisionTest = false;
+	SpringArm->bInheritRoll = false;
+
+	GameCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("GameCamera"));
+	GameCamera->SetupAttachment(SpringArm);
+
+
 	FigureAtPosition = { ECF::Tower, ECF::Horse, ECF::Bishop, ECF::Queen, ECF::King, ECF::Bishop,ECF::Horse, ECF::Tower,
 						 ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn,
-						ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
-						ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
-						ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
-						ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
-						ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn,
+						 ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
+							ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
+							ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
+							ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
+							ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn,
 						ECF::Tower, ECF::Horse, ECF::Bishop, ECF::Queen, ECF::King, ECF::Bishop,ECF::Horse, ECF::Tower 
 						};
 
@@ -86,8 +100,9 @@ void ABoard::BeginPlay()
 
 	}
 
-	
 }
+
+
 
 
 
@@ -95,6 +110,19 @@ void ABoard::BeginPlay()
 void ABoard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	FRotator currentRotation = SpringArmAncor->GetComponentRotation();
+	
+	currentRotation.Yaw = FMath::FInterpTo(currentRotation.Yaw, currentRotation.Yaw + AxisValueYaw, DeltaTime, 60.f);
+	
+	//float clampedValue = FMath::Clamp(currentRotation.Pitch + AxisValuePitch, -10.f, -40.f);
+	currentRotation.Pitch = FMath::FInterpTo(currentRotation.Pitch, currentRotation.Pitch + AxisValuePitch, DeltaTime, 60.f);
 
+	SpringArmAncor->SetRelativeRotation(currentRotation);
+
+
+	//float currentLength = SpringArm->TargetArmLength;
+//	newZoom = FMath::Clamp(currentLength + newZoom, 500.f, 1000.f);
+//	SpringArm->TargetArmLength = newZoom;
 }
 

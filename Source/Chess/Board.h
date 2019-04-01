@@ -9,6 +9,8 @@
 
 class AChessField;
 class AAbstract_Piece;
+class UCameraComponent;
+class USpringArmComponent;
 
 UCLASS()
 class CHESS_API ABoard : public AActor
@@ -21,6 +23,15 @@ public:
 
 	// Sets default values for this actor's properties
 	ABoard();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UCameraComponent* GameCamera;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	USceneComponent* SpringArmAncor;
 
 
 	UPROPERTY(BlueprintReadWrite)
@@ -47,10 +58,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<ECF, TSubclassOf<AAbstract_Piece>> Pieces;
 
-protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY()
+	float AxisValueYaw;
 
-
+	UPROPERTY()
+	float AxisValuePitch;
 };
