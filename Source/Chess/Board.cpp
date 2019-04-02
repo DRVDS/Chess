@@ -23,23 +23,21 @@ ABoard::ABoard()
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	SpringArmAncor = CreateDefaultSubobject<USceneComponent>(TEXT("SpringArmAncor"));
-	SpringArmAncor->SetupAttachment(RootComponent);
-	SpringArmAncor->SetRelativeLocation(FVector(1600.f, -1200.f, 0.f));
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));	
+	GameCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("GameCamera"));
 
-	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArmAncor->SetupAttachment(RootComponent);
 	SpringArm->SetupAttachment(SpringArmAncor);
-	SpringArm->TargetArmLength = 4000.f;
+	GameCamera->SetupAttachment(SpringArm);
+	
+	SpringArmAncor->SetRelativeLocation(FVector(1600.f, -1200.f, 0.f));
 	SpringArm->SetWorldRotation(FRotator(-50.f, 0.f, 0.f));
+
+	SpringArm->TargetArmLength = 4000.f;
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->bInheritRoll = false;
 	SpringArm->bInheritYaw = true;
 	SpringArm->bInheritPitch = true;
-
-	GameCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("GameCamera"));
-	GameCamera->SetupAttachment(SpringArm);
-
-
-
 
 	FigureAtPosition = { ECF::Tower, ECF::Horse, ECF::Bishop, ECF::Queen, ECF::King, ECF::Bishop,ECF::Horse, ECF::Tower,
 						 ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn,
@@ -59,10 +57,12 @@ void ABoard::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Get the Player Controller for later
+	PC = Cast<AChessPlayerController>( UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	
-	// TODO: get Player Controller;
-	//PC = Cast<AChessPlayerController>(GetWorld()->GetFirstPlayerController());
+	// set the Board to zero world position so that there are no problems with the camera positioning 
 	SpringArm->SetWorldRotation(FRotator(-50.f, 0.f, 0.f));
+	SetActorLocationAndRotation(FVector::ZeroVector, FRotator::ZeroRotator);
 
 	FActorSpawnParameters Spawnparams;
 	Spawnparams.Owner = this;
@@ -132,13 +132,13 @@ void ABoard::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 void ABoard::Zoom(float axis)
-{
-	SpringArm->TargetArmLength = FMath::Clamp(SpringArm->TargetArmLength+axis * 100, 2000.f,4000.f);
+{	// invert the axis to change directions of zoom
+	SpringArm->TargetArmLength = FMath::Clamp(SpringArm->TargetArmLength+ (-axis) * PC->ZoomSensitity, 2000.f,4000.f);
 }
 
 void ABoard::MousePitch(float axis)
 {
-	float MoveIntention = FMath::Clamp(SpringArm->GetTargetRotation().Pitch + axis, -60.f, -20.f);
+	float MoveIntention = FMath::Clamp(SpringArm->GetTargetRotation().Pitch + axis * PC->MousePitchSensitivity, -60.f, -20.f);
 
 	SpringArm->SetWorldRotation(FRotator(MoveIntention, SpringArm->GetTargetRotation().Yaw, 0.f));
 
@@ -147,7 +147,7 @@ void ABoard::MousePitch(float axis)
 
 void ABoard::MouseYaw(float axis) 
 {
-	SpringArmAncor->AddLocalRotation(FRotator(0.f,GetWorld()->GetDeltaSeconds() * axis *  300.f ,0.f));
+	SpringArmAncor->AddLocalRotation(FRotator(0.f,GetWorld()->GetDeltaSeconds() * axis *  PC->MouseYawSensitivity ,0.f));
 }
 
 void ABoard::LeftMouseClicked() 

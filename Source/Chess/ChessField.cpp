@@ -34,12 +34,7 @@ AChessField::AChessField()
 		Black = BlackInst.Object;
 	}
 
-	// set parent
-	this->Board = Cast<ABoard>(GetInstigator());
 
-
-	// add delegate
-	FieldMesh->OnBeginCursorOver.AddDynamic(this, &AChessField::OnCursorOver);
 
 }
 
@@ -65,11 +60,30 @@ void AChessField::SpawnFigure(TSubclassOf<AAbstract_Piece> PieceToSpawn, bool is
 void AChessField::BeginPlay()
 {
 	Super::BeginPlay();
-	
-}
 
-void AChessField::OnCursorOver(UPrimitiveComponent* Component) 
+	// set parent
+	this->Board = Cast<ABoard>(GetInstigator());
+
+	// add delegate - needs to be done in BeginPlay
+	FieldMesh->OnBeginCursorOver.AddDynamic(this, &AChessField::FieldOnBeginCursorOver);
+	FieldMesh->OnEndCursorOver.AddDynamic(this, &AChessField::FieldOnEndCursorOver);
+
+}
+// TODO SET MATERIAL OUTLINE 
+void AChessField::FieldOnBeginCursorOver(UPrimitiveComponent* Component) 
 {
-	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Green, "CursorOver");
-}
+	if(Board->ActivePiece !=nullptr )
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Green, "CursorOver");
 
+	TArray<AChessField> outValidFields;
+	Board->ActivePiece->GetValidMoves(outValidFields);
+	//turn on green outline
+	FieldMesh->SetRenderCustomDepth(true);
+}
+// RESET  MATERIAL OUTLINE
+void AChessField::FieldOnEndCursorOver(UPrimitiveComponent* Component)
+{
+	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, "CursorLeft");
+	//turn off green outline
+	FieldMesh->SetRenderCustomDepth(false);
+}

@@ -8,7 +8,7 @@
 #include "Abstract_Piece.generated.h"
 
 UCLASS()
-class CHESS_API AAbstract_Piece : public AActor
+class CHESS_API AAbstract_Piece : public AActor 
 {
 	GENERATED_BODY()
 
@@ -33,6 +33,8 @@ public:
 	UFUNCTION()
 	void DeactivatePiece();
 
+	UFUNCTION()
+	virtual void GetValidMoves(const TArray& outValidFields);
 
 
 protected:

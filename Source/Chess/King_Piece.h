@@ -13,5 +13,7 @@ UCLASS()
 class CHESS_API AKing_Piece : public AAbstract_Piece
 {
 	GENERATED_BODY()
+
+		void GetValidMoves(AChessField* outValidFields) override {};
 	
 };

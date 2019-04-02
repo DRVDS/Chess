@@ -50,8 +50,12 @@ public:
 	UPROPERTY()
 		UMaterialInstanceConstant* White;
 
+	// Delegates for MouseCursor Overlap
 	UFUNCTION()
-	void OnCursorOver(UPrimitiveComponent* Component);
+		void FieldOnBeginCursorOver(UPrimitiveComponent* Component);
+
+	UFUNCTION()
+		void FieldOnEndCursorOver(UPrimitiveComponent* Component);
 
 protected:
 	// Called when the game starts or when spawned
