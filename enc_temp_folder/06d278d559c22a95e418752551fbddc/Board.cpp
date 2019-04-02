@@ -59,9 +59,10 @@ void ABoard::BeginPlay()
 {
 	Super::BeginPlay();
 
-		// get Player Controller;
-		//PC = Cast<AChessPlayerController>(GetWorld()->GetFirstPlayerController());
-
+	
+	// TODO: get Player Controller;
+	//PC = Cast<AChessPlayerController>(GetWorld()->GetFirstPlayerController());
+	SpringArm->SetWorldRotation(FRotator(-50.f, 0.f, 0.f));
 
 	FActorSpawnParameters Spawnparams;
 	Spawnparams.Owner = this;
@@ -103,8 +104,8 @@ void ABoard::BeginPlay()
 				}
 			}
 	
-				// add to fields array
-				Fields.Add(tmp);
+			// add to fields array
+			Fields.Add(tmp);
 		
 		}
 
@@ -113,27 +114,11 @@ void ABoard::BeginPlay()
 }
 
 
-
-
-
 // Called every frame
 void ABoard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	//FRotator currentRotation = SpringArmAncor->GetComponentRotation();
-	//
-	//currentRotation.Yaw = FMath::FInterpTo(currentRotation.Yaw, currentRotation.Yaw + AxisValueYaw, DeltaTime, 60.f);
-	//
-	////float clampedValue = FMath::Clamp(currentRotation.Pitch + AxisValuePitch, -10.f, -40.f);
-	//currentRotation.Pitch = FMath::FInterpTo(currentRotation.Pitch, currentRotation.Pitch + AxisValuePitch, DeltaTime, 60.f);
 
-	//SpringArmAncor->SetRelativeRotation(currentRotation);
-
-
-	//float currentLength = SpringArm->TargetArmLength;
-//	newZoom = FMath::Clamp(currentLength + newZoom, 500.f, 1000.f);
-//	SpringArm->TargetArmLength = newZoom;
 }
 
 // Called to bind functionality to input
@@ -143,29 +128,20 @@ void ABoard::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("MouseYaw", this, &ABoard::MouseYaw);
 	PlayerInputComponent->BindAxis("MousePitch", this, &ABoard::MousePitch);
 	PlayerInputComponent->BindAxis("Zoom", this, &ABoard::Zoom);
-
-
+	PlayerInputComponent->BindAction("LeftMouseClicked", IE_Pressed, this, &ABoard::LeftMouseClicked);
 }
 
 void ABoard::Zoom(float axis)
 {
-	//if (!FMath::IsNearlyZero(axis))
-	{
-	
-		{ 
-			SpringArm->TargetArmLength = FMath::Clamp(SpringArm->TargetArmLength+axis * 100, 2000.f,4000.f);
-		}
-	}
+	SpringArm->TargetArmLength = FMath::Clamp(SpringArm->TargetArmLength+axis * 100, 2000.f,4000.f);
 }
 
 void ABoard::MousePitch(float axis)
 {
-	float MoveIntention = GetWorld()->GetDeltaSeconds() * axis * 100 + SpringArm->GetTargetRotation().Pitch;
-	
-	if( MoveIntention < -80.f || MoveIntention < -20.f ) 
-	{
-		SpringArm->SetWorldRotation(FRotator(MoveIntention, SpringArm->GetTargetRotation().Yaw, 0.f));
-	}
+	float MoveIntention = FMath::Clamp(SpringArm->GetTargetRotation().Pitch + axis, -60.f, -20.f);
+
+	SpringArm->SetWorldRotation(FRotator(MoveIntention, SpringArm->GetTargetRotation().Yaw, 0.f));
+
 	
 }
 
@@ -174,3 +150,22 @@ void ABoard::MouseYaw(float axis)
 	SpringArmAncor->AddLocalRotation(FRotator(0.f,GetWorld()->GetDeltaSeconds() * axis *  300.f ,0.f));
 }
 
+void ABoard::LeftMouseClicked() 
+{
+
+	FHitResult Result; 
+	GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursorByChannel
+	(
+		UEngineTypes::ConvertToTraceType(ECC_Camera),		// trace channel - very obscure cast
+		true,										// complex trace 
+		Result										// output HitResult
+	);
+
+	auto ClickedFigure = Cast<AAbstract_Piece>(Result.Actor);
+
+	if (ClickedFigure)
+	{
+		ActivePiece = ClickedFigure;
+	}
+
+}

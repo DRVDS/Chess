@@ -37,10 +37,6 @@ AChessField::AChessField()
 	// set parent
 	this->Board = Cast<ABoard>(GetInstigator());
 
-
-	// add delegate
-	FieldMesh->OnBeginCursorOver.AddDynamic(this, &AChessField::OnCursorOver);
-
 }
 
 void AChessField::SetFieldParameters(F2DPosition _Position, bool _isWhite)
@@ -68,8 +64,5 @@ void AChessField::BeginPlay()
 	
 }
 
-void AChessField::OnCursorOver(UPrimitiveComponent* Component) 
-{
-	GEngine->AddOnScreenDebugMessage(1, 10.f, FColor::Green, "CursorOver");
-}
+
 

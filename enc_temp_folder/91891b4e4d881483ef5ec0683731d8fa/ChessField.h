@@ -33,25 +33,22 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		bool isOccupied;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ABoard* Board;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool isWhite;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UStaticMeshComponent* FieldMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USceneComponent* CenterOfBoard;
 
 	UPROPERTY()
 		UMaterialInstanceConstant* Black;
 	UPROPERTY()
 		UMaterialInstanceConstant* White;
-
-	UFUNCTION()
-	void OnCursorOver(UPrimitiveComponent* Component);
 
 protected:
 	// Called when the game starts or when spawned

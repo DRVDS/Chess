@@ -11,6 +11,7 @@ void AChessPlayerController::BeginPlay()
 	this->bEnableMouseOverEvents = true;
 
 
+
 	//TArray<AActor*> FoundBoards;
 	//UGameplayStatics::GetAllActorsOfClass(GetWorld(),ABoard::StaticClass(), FoundBoards);
 	//// There will only be one board

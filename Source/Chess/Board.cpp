@@ -104,17 +104,14 @@ void ABoard::BeginPlay()
 				}
 			}
 	
-				// add to fields array
-				Fields.Add(tmp);
+			// add to fields array
+			Fields.Add(tmp);
 		
 		}
 
 	}
 
 }
-
-
-
 
 
 // Called every frame
@@ -131,8 +128,7 @@ void ABoard::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("MouseYaw", this, &ABoard::MouseYaw);
 	PlayerInputComponent->BindAxis("MousePitch", this, &ABoard::MousePitch);
 	PlayerInputComponent->BindAxis("Zoom", this, &ABoard::Zoom);
-
-
+	PlayerInputComponent->BindAction("LeftMouseClicked", IE_Pressed, this, &ABoard::LeftMouseClicked);
 }
 
 void ABoard::Zoom(float axis)
@@ -154,3 +150,32 @@ void ABoard::MouseYaw(float axis)
 	SpringArmAncor->AddLocalRotation(FRotator(0.f,GetWorld()->GetDeltaSeconds() * axis *  300.f ,0.f));
 }
 
+void ABoard::LeftMouseClicked() 
+{
+
+	FHitResult Result; 
+	GetWorld()->GetFirstPlayerController()->GetHitResultUnderCursorByChannel
+	(
+		UEngineTypes::ConvertToTraceType(ECC_Camera),// trace channel - very obscure cast
+		true,										 // complex trace 
+		Result										 // output HitResult
+	);
+
+
+	auto ClickedFigure = Cast<AAbstract_Piece>(Result.Actor);
+
+	if (ClickedFigure)		// if ChessPiece was clicked
+	{
+		// Deactivate the previous piece if any
+		if (ActivePiece != nullptr)
+		{
+			ActivePiece->DeactivatePiece();
+		}
+		// set the new piece active
+		ActivePiece = ClickedFigure;
+		
+		ActivePiece->ActivatePiece();
+
+	}
+
+}

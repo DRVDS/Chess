@@ -60,15 +60,10 @@ public:
 	TMap<ECF, TSubclassOf<AAbstract_Piece>> Pieces;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AAbstract_Piece* ActivePiece = nullptr;
+	AAbstract_Piece* ActivePiece;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-
-
-
-	// Get All of the Mouse stuff to the Player Controller
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
