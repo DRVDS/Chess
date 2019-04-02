@@ -23,14 +23,13 @@ class CHESS_API AChessPlayerController : public APlayerController
 	UFUNCTION()
 	void BeginPlay();
 
-	UFUNCTION()
-	void SetupInputComponent() override;
+//public:
+//	UPROPERTY()
+//	float MouseYawSensitivity = 300.f;
+//	UPROPERTY()
+//	float MousePitchSensitivity = 100.f;
+//	UPROPERTY()
+//	float ZoomSensitity = 100.f;
 
-	UFUNCTION()
-	void MouseYaw(float axis);
-	UFUNCTION()
-	void MousePitch(float axis);
-	//UFUNCTION()
-	//void SetZoom( float axis);
 
 };

@@ -8,7 +8,7 @@
 #include "Abstract_Piece.generated.h"
 
 UCLASS()
-class CHESS_API AAbstract_Piece : public APawn
+class CHESS_API AAbstract_Piece : public AActor
 {
 	GENERATED_BODY()
 
@@ -39,9 +39,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

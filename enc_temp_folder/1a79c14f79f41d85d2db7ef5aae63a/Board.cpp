@@ -59,10 +59,9 @@ void ABoard::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
-	// TODO: get Player Controller;
-	//PC = Cast<AChessPlayerController>(GetWorld()->GetFirstPlayerController());
-	SpringArm->SetWorldRotation(FRotator(-50.f, 0.f, 0.f));
+		// get Player Controller;
+		//PC = Cast<AChessPlayerController>(GetWorld()->GetFirstPlayerController());
+
 
 	FActorSpawnParameters Spawnparams;
 	Spawnparams.Owner = this;
@@ -121,7 +120,20 @@ void ABoard::BeginPlay()
 void ABoard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	//FRotator currentRotation = SpringArmAncor->GetComponentRotation();
+	//
+	//currentRotation.Yaw = FMath::FInterpTo(currentRotation.Yaw, currentRotation.Yaw + AxisValueYaw, DeltaTime, 60.f);
+	//
+	////float clampedValue = FMath::Clamp(currentRotation.Pitch + AxisValuePitch, -10.f, -40.f);
+	//currentRotation.Pitch = FMath::FInterpTo(currentRotation.Pitch, currentRotation.Pitch + AxisValuePitch, DeltaTime, 60.f);
 
+	//SpringArmAncor->SetRelativeRotation(currentRotation);
+
+
+	//float currentLength = SpringArm->TargetArmLength;
+//	newZoom = FMath::Clamp(currentLength + newZoom, 500.f, 1000.f);
+//	SpringArm->TargetArmLength = newZoom;
 }
 
 // Called to bind functionality to input
@@ -137,15 +149,23 @@ void ABoard::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void ABoard::Zoom(float axis)
 {
-	SpringArm->TargetArmLength = FMath::Clamp(SpringArm->TargetArmLength+axis * 100, 2000.f,4000.f);
+	//if (!FMath::IsNearlyZero(axis))
+	{
+	
+		{ 
+			SpringArm->TargetArmLength = FMath::Clamp(SpringArm->TargetArmLength+axis * 100, 2000.f,4000.f);
+		}
+	}
 }
 
 void ABoard::MousePitch(float axis)
 {
-	float MoveIntention = FMath::Clamp(SpringArm->GetTargetRotation().Pitch + axis, -60.f, -20.f);
-
-	SpringArm->SetWorldRotation(FRotator(MoveIntention, SpringArm->GetTargetRotation().Yaw, 0.f));
-
+	float MoveIntention = GetWorld()->GetDeltaSeconds() * axis * 100 + SpringArm->GetTargetRotation().Pitch;
+	
+	if( MoveIntention < -80.f || MoveIntention < -20.f ) 
+	{
+		SpringArm->SetWorldRotation(FRotator(MoveIntention, SpringArm->GetTargetRotation().Yaw, 0.f));
+	}
 	
 }
 

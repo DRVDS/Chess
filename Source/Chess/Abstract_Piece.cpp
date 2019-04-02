@@ -33,10 +33,5 @@ void AAbstract_Piece::DeactivatePiece()
 }
 
 
-// Called to bind functionality to input
-void AAbstract_Piece::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-}
 

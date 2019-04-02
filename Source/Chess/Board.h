@@ -11,9 +11,10 @@ class AChessField;
 class AAbstract_Piece;
 class UCameraComponent;
 class USpringArmComponent;
+class AChessPlayerController;
 
 UCLASS()
-class CHESS_API ABoard : public AActor
+class CHESS_API ABoard : public APawn
 {
 	GENERATED_BODY()
 	
@@ -61,9 +62,17 @@ public:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY()
-	float AxisValueYaw;
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY()
-	float AxisValuePitch;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AChessPlayerController* PC;
+
+	UFUNCTION()
+	void MouseYaw(float axis);
+	UFUNCTION()
+	void MousePitch(float axis);
+	UFUNCTION()
+	void Zoom(float axis);
+
 };

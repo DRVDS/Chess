@@ -34,12 +34,13 @@ AChessField::AChessField()
 		Black = BlackInst.Object;
 	}
 
+	// set parent
+	this->Board = Cast<ABoard>(GetInstigator());
+
 }
 
 void AChessField::SetFieldParameters(F2DPosition _Position, bool _isWhite)
 {
-	// set parent
-	Board = Cast<ABoard>(GetOwner());
 
 	Position = _Position;
 	isWhite = _isWhite;
