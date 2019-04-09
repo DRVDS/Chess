@@ -26,12 +26,16 @@ AChessField::AChessField()
 	// get material for field - black and white
 	static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> WhiteInst(TEXT("MaterialInstanceConstant'/Game/Chess/White.White'"));
 	static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> BlackInst(TEXT("MaterialInstanceConstant'/Game/Chess/Black.Black'"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant> DebugInst(TEXT("MaterialInstanceConstant'/Game/Chess/Debug.Debug'"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstanceConstant>AttackInst(TEXT("MaterialInstanceConstant'/Game/Chess/Attack.Attack'"));
 	
 	if (WhiteInst.Succeeded() && BlackInst.Succeeded() && FieldMeshInst.Succeeded())
 	{
 		FieldMesh->SetStaticMesh(FieldMeshInst.Object);
 		White = WhiteInst.Object;
 		Black = BlackInst.Object;
+		DebugColor = DebugInst.Object;
+		AttackColor = AttackInst.Object;
 	}
 
 
@@ -44,16 +48,29 @@ void AChessField::SetFieldParameters(F2DPosition _Position, bool _isWhite)
 	Position = _Position;
 	isWhite = _isWhite;
 	FieldMesh->SetMaterial(0, isWhite ? White : Black);
-	
+	isOccupied = false;
+	FigureLocatedOn = nullptr;
 }
 
-void AChessField::SpawnFigure(TSubclassOf<AAbstract_Piece> PieceToSpawn, bool isWhite)
+// Spawn figure and set the field it occupies 
+void AChessField::SpawnFigure(TSubclassOf<AAbstract_Piece> PieceToSpawn, bool isWhite, ECF FigureType)
 {
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	SpawnParams.Owner = Board;
+
 	auto Piece = GetWorld()->SpawnActor<AAbstract_Piece>(PieceToSpawn, CenterOfBoard->GetComponentTransform(),SpawnParams);
-	if(Piece)
+	if (Piece) {
 		Piece->FigureStaticMesh->SetMaterial(0, isWhite ? White : Black);
+		Piece->isBlack = !isWhite;
+		Piece->FigureType = FigureType;
+		Piece->FigurePosition = this->Position;
+		
+		isOccupied = true;
+		FigureLocatedOn = Piece;
+	}
+		
 }
 
 // Called when the game starts or when spawned
@@ -72,13 +89,16 @@ void AChessField::BeginPlay()
 // TODO SET MATERIAL OUTLINE 
 void AChessField::FieldOnBeginCursorOver(UPrimitiveComponent* Component) 
 {
-	if(Board->ActivePiece !=nullptr )
+	if (Board->ActivePiece != nullptr)
+	{
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Green, "CursorOver");
 
-	TArray<AChessField> outValidFields;
-	Board->ActivePiece->GetValidMoves(outValidFields);
-	//turn on green outline
-	FieldMesh->SetRenderCustomDepth(true);
+		TArray<AChessField*> outEmptyFields;
+		TArray<AChessField*> outAttackFields;
+		Board->ActivePiece->GetMoves(outEmptyFields, outAttackFields);
+		//turn on green outline
+		FieldMesh->SetRenderCustomDepth(true);
+	}
 }
 // RESET  MATERIAL OUTLINE
 void AChessField::FieldOnEndCursorOver(UPrimitiveComponent* Component)

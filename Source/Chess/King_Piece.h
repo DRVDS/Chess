@@ -14,6 +14,90 @@ class CHESS_API AKing_Piece : public AAbstract_Piece
 {
 	GENERATED_BODY()
 
-		void GetValidMoves(AChessField* outValidFields) override {};
+		 void GetMoves( TArray<AChessField*>& outValidFields, TArray<AChessField*>& outAttackFields) override {
+
+			AChessField* ret = Board->GetField(F2DPosition(FigurePosition.x+1, FigurePosition.y));
+			if (ret && !ret->isOccupied)
+			{
+				outValidFields.Add(ret);
+			}
+			else if (ret && !ret->isOccupied && (ret->FigureLocatedOn->isBlack && !this->isBlack) || (!ret->FigureLocatedOn->isBlack && this->isBlack))
+			{
+				outAttackFields.Add(ret);
+			}
+	
+		
+			ret = Board->GetField(F2DPosition(FigurePosition.x-1, FigurePosition.y));
+			if (ret && !ret->isOccupied)
+			{
+				outValidFields.Add(ret);
+			}
+			else if (ret && !ret->isOccupied && (ret->FigureLocatedOn->isBlack && !this->isBlack) || (!ret->FigureLocatedOn->isBlack && this->isBlack))
+			{
+				outAttackFields.Add(ret);
+			}
+		
+			ret = Board->GetField(F2DPosition(FigurePosition.x, FigurePosition.y+1));
+			if (ret && !ret->isOccupied)
+			{
+				outValidFields.Add(ret);
+			}
+			else if (ret && !ret->isOccupied && (ret->FigureLocatedOn->isBlack && !this->isBlack) || (!ret->FigureLocatedOn->isBlack && this->isBlack))
+			{
+				outAttackFields.Add(ret);
+			}
+		
+			ret = Board->GetField(F2DPosition(FigurePosition.x, FigurePosition.y-1));
+			if (ret && !ret->isOccupied)
+			{
+				outValidFields.Add(ret);
+			}
+			
+			ret = Board->GetField(F2DPosition(FigurePosition.x+1, FigurePosition.y+1));
+			if (ret && !ret->isOccupied)
+			{
+				outValidFields.Add(ret);
+			}
+			else if (ret && !ret->isOccupied && (ret->FigureLocatedOn->isBlack && !this->isBlack) || (!ret->FigureLocatedOn->isBlack && this->isBlack))
+			{
+				outAttackFields.Add(ret);
+			}
+
+			ret = Board->GetField(F2DPosition(FigurePosition.x-1, FigurePosition.y-1));
+			if (ret && !ret->isOccupied)
+			{
+				outValidFields.Add(ret);
+			}
+			else if (ret && !ret->isOccupied && (ret->FigureLocatedOn->isBlack && !this->isBlack) || (!ret->FigureLocatedOn->isBlack && this->isBlack))
+			{
+				outAttackFields.Add(ret);
+			}
+
+			ret = Board->GetField(F2DPosition(FigurePosition.x + 1, FigurePosition.y - 1));
+			if (ret && !ret->isOccupied)
+			{
+				outValidFields.Add(ret);
+			}
+			else if (ret && !ret->isOccupied && (ret->FigureLocatedOn->isBlack && !this->isBlack) || (!ret->FigureLocatedOn->isBlack && this->isBlack))
+			{
+				outAttackFields.Add(ret);
+			}
+
+			ret = Board->GetField(F2DPosition(FigurePosition.x - 1, FigurePosition.y + 1));
+			if (ret && !ret->isOccupied)
+			{
+				outValidFields.Add(ret);
+			}
+			else if (ret && !ret->isOccupied && (ret->FigureLocatedOn->isBlack && !this->isBlack) || (!ret->FigureLocatedOn->isBlack && this->isBlack))
+			{
+				outAttackFields.Add(ret);
+			}
+
+
+
+
+
+		UE_LOG(LogTemp, Warning, TEXT("Hello from king  %i  fields - I could attack"), outValidFields.Num());
+	};
 	
 };

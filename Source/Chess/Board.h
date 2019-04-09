@@ -65,7 +65,11 @@ public:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	AChessField* GetField(F2DPosition Coordinates);
 
+	UPROPERTY()
+	FVector	GoalLocMovePieceTo;
 
 
 	// Get All of the Mouse stuff to the Player Controller

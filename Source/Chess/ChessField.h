@@ -21,35 +21,46 @@ public:
 	// Sets default values for this actor's properties
 	AChessField();
 
+	// helper functions to set the x and y position and colour during spawning
 	UFUNCTION(BlueprintCallable)
 	void SetFieldParameters(F2DPosition Position, bool isWhite);
 
+	// function to help spawn figure at the location at Position  
 	UFUNCTION(BlueprintCallable)
-	void SpawnFigure(TSubclassOf<AAbstract_Piece> PieceToSpawn, bool isBlack);
-
+	void SpawnFigure(TSubclassOf<AAbstract_Piece> PieceToSpawn, bool isBlack, ECF FigureType);
+	
+	// position vector of field
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	F2DPosition Position;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		bool isOccupied;
+	bool isOccupied;
 
+	// holds a reference to the board
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	ABoard* Board;
 
+	// holds a reference to the figure that was spawned on it
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	AAbstract_Piece* FigureLocatedOn;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	bool isWhite;
-
+	
+	// components and materials needed for the field
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		UStaticMeshComponent* FieldMesh;
-
+	UStaticMeshComponent* FieldMesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		USceneComponent* CenterOfBoard;
-
+	USceneComponent* CenterOfBoard;
 	UPROPERTY()
-		UMaterialInstanceConstant* Black;
+	UMaterialInstanceConstant* Black;
 	UPROPERTY()
-		UMaterialInstanceConstant* White;
-
+	UMaterialInstanceConstant* White;
+	UPROPERTY()
+	UMaterialInstanceConstant* DebugColor;
+	UPROPERTY()
+	UMaterialInstanceConstant* AttackColor;
+	
 	// Delegates for MouseCursor Overlap
 	UFUNCTION()
 		void FieldOnBeginCursorOver(UPrimitiveComponent* Component);

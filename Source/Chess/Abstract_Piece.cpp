@@ -3,6 +3,7 @@
 #include "Abstract_Piece.h"
 #include "Components/StaticMeshComponent.h"
 
+
 // Sets default values
 AAbstract_Piece::AAbstract_Piece()
 {
@@ -12,6 +13,9 @@ AAbstract_Piece::AAbstract_Piece()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
 	FigureStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FigureMesh"));
 	FigureStaticMesh->SetupAttachment(RootComponent);
+	
+
+
 
 }
 
@@ -19,7 +23,9 @@ AAbstract_Piece::AAbstract_Piece()
 void AAbstract_Piece::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	Board = Cast<ABoard>(GetOwner());
+	hasMoved = false;
 }
 
 void AAbstract_Piece::ActivatePiece()
@@ -32,6 +38,20 @@ void AAbstract_Piece::DeactivatePiece()
 
 }
 
+void AAbstract_Piece::GetMoves( TArray<AChessField*>& outValidFields, TArray<AChessField*>& outAttackFields)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Hello from parent"));
+}
 
 
-
+void AAbstract_Piece::MoveTo(F2DPosition Goal) 
+{
+	AChessField* goalField = Board->GetField(Goal);
+	if (goalField)
+	{
+		Board->GoalLocMovePieceTo = goalField->CenterOfBoard->GetComponentLocation();
+		
+		hasMoved = true;
+	}
+	
+}

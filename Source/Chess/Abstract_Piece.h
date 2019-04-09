@@ -5,7 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "MyTypes.h"
+#include "Board.h"
+#include "ChessField.h"
 #include "Abstract_Piece.generated.h"
+
+
 
 UCLASS()
 class CHESS_API AAbstract_Piece : public AActor 
@@ -27,15 +31,24 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	F2DPosition FigurePosition;
 
+	UPROPERTY(VisibleAnywhere)
+	bool hasMoved;
+
+	UPROPERTY(VisibleAnywhere)
+	ABoard* Board;
+
 	UFUNCTION()
 	void ActivatePiece();
 
 	UFUNCTION()
 	void DeactivatePiece();
 
+	// gets all the free fields the figure can move to
 	UFUNCTION()
-	virtual void GetValidMoves(const TArray& outValidFields);
+	virtual void GetMoves( TArray<AChessField*>& outValidFields, TArray<AChessField*>& outAttackFields);
 
+	UFUNCTION()
+	virtual void MoveTo(F2DPosition Goal);
 
 protected:
 	// Called when the game starts or when spawned

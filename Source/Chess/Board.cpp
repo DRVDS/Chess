@@ -8,6 +8,7 @@
 #include "ChessPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Pawn_Chess.h"
 
 // Sets default values
 ABoard::ABoard()
@@ -43,7 +44,7 @@ ABoard::ABoard()
 						 ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn,
 						 ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
 						 ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
-						 ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
+						 ECF::Empty,ECF::Empty,ECF::Empty,ECF::Bishop,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
 						 ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,ECF::Empty,
 						 ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn, ECF::Pawn,
 						 ECF::Tower, ECF::Horse, ECF::Bishop, ECF::Queen, ECF::King, ECF::Bishop,ECF::Horse, ECF::Tower 
@@ -64,9 +65,6 @@ void ABoard::BeginPlay()
 	SpringArm->SetWorldRotation(FRotator(-50.f, 0.f, 0.f));
 	SetActorLocationAndRotation(FVector::ZeroVector, FRotator::ZeroRotator);
 
-	FActorSpawnParameters Spawnparams;
-	Spawnparams.Owner = this;
-
 	F2DPosition tmpPos;
 	FTransform tmpTrans(FRotator(0.f, 0.f, 0.f));
 
@@ -78,6 +76,7 @@ void ABoard::BeginPlay()
 			tmpTrans.SetLocation(FVector(x*400.f, y*-400.f, 0.f));
 			tmpPos.x = x;
 			tmpPos.y = y;
+			
 			
 			auto tmp = GetWorld()->SpawnActorDeferred<AChessField>(FieldActor,tmpTrans,this,this);
 		
@@ -99,8 +98,9 @@ void ABoard::BeginPlay()
 				if(FigureType != ECF::Empty)
 				{
 					auto ClassToSpawn = Pieces.FindRef(FigureType);
-					tmp->SpawnFigure(ClassToSpawn, x + y * width < 20 ? true : false);
+					tmp->SpawnFigure(ClassToSpawn, x + y * width < 20 ? true : false, FigureType);
 					tmp->isOccupied = true;
+
 				}
 			}
 	
@@ -118,6 +118,20 @@ void ABoard::BeginPlay()
 void ABoard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (ActivePiece != nullptr && GoalLocMovePieceTo != ActivePiece->GetActorLocation())
+	{
+		FVector StartingPos = ActivePiece->GetActorLocation();
+		
+		ActivePiece->SetActorLocation(
+			FMath::VInterpConstantTo(
+				StartingPos,
+				GoalLocMovePieceTo,
+				DeltaTime,
+				0.1f)
+		);
+	}
+
 
 }
 
@@ -150,6 +164,19 @@ void ABoard::MouseYaw(float axis)
 	SpringArmAncor->AddLocalRotation(FRotator(0.f,GetWorld()->GetDeltaSeconds() * axis *  PC->MouseYawSensitivity ,0.f));
 }
 
+
+AChessField* ABoard::GetField(F2DPosition Coordinates)
+{
+	int index = Coordinates.x + Coordinates.y * width;
+	// check if valid index 
+	if(index >= 0  && index  < Fields.Num() )
+		return Fields[index];
+	return false;
+}
+
+
+
+
 void ABoard::LeftMouseClicked() 
 {
 
@@ -161,8 +188,8 @@ void ABoard::LeftMouseClicked()
 		Result										 // output HitResult
 	);
 
-
-	auto ClickedFigure = Cast<AAbstract_Piece>(Result.Actor);
+	// CASE 1: User clicked on a figure
+	AAbstract_Piece* ClickedFigure = Cast<AAbstract_Piece>(Result.Actor);
 
 	if (ClickedFigure)		// if ChessPiece was clicked
 	{
@@ -173,9 +200,31 @@ void ABoard::LeftMouseClicked()
 		}
 		// set the new piece active
 		ActivePiece = ClickedFigure;
+
+		TArray<AChessField*> EmptyFields;
+		TArray<AChessField*> AttackFields;
+		ActivePiece->GetMoves(EmptyFields, AttackFields);
 		
+		for (AChessField* ptr : EmptyFields)
+		{
+			ptr->FieldMesh->SetMaterial(0, ptr->DebugColor);
+		}
+
+		for (AChessField* ptr :AttackFields)
+		{
+			ptr->FieldMesh->SetMaterial(0, ptr->AttackColor);
+		}
+
 		ActivePiece->ActivatePiece();
-
 	}
+	// CASE 2: USER CLICKED ON A FIELD
+	else
+	{			
+		AChessField* Goal = Cast<AChessField>(Result.Actor);
 
+		if (Goal && ActivePiece != nullptr) 
+		{
+			ActivePiece->MoveTo(Goal->Position);
+		}
+	}
 }
